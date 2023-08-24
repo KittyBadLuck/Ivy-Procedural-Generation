@@ -132,7 +132,7 @@ public class IvyGeneration : EditorWindow
                Undo.DestroyObjectImmediate(branches[i]); 
             }
 
-            if (InternalEditorUtility.tags.Contains("Leaf"))
+            if(InternalEditorUtility.tags.Contains("Leaf"))
             {
                 var leafs = GetExistingLeafs();
                 for (int i = 0; i < leafs.Count; i++)
@@ -545,41 +545,50 @@ public class IvyGeneration : EditorWindow
     void BakeVinesIntoSingleMesh()
     {
         Undo.SetCurrentGroupName(nameof(BakeVinesIntoSingleMesh));
-        var branches = GetExistingBranches();
-        var leafs = GetExistingLeafs();
-        //combine everything and get a new game object for this
-        Mesh finalBranch = new Mesh();
-        Mesh finalLeaf = new Mesh();
-        CombineInstance[] combineLeaf = new CombineInstance[leafs.Count];
-        CombineInstance[] combine = new CombineInstance[branches.Count];
-
-        for (int i = 0; i < branches.Count; i++)
+        
+        if (InternalEditorUtility.tags.Contains("Branch"))
         {
-            combine[i].mesh = branches[i].GetComponent<MeshFilter>().sharedMesh;
-            combine[i].transform = branches[i].transform.localToWorldMatrix;
+            var branches = GetExistingBranches();
+            //combine everything and get a new game object for this
+            Mesh finalBranch = new Mesh();
+       
+       
+            CombineInstance[] combine = new CombineInstance[branches.Count];
+
+            for (int i = 0; i < branches.Count; i++)
+            {
+                combine[i].mesh = branches[i].GetComponent<MeshFilter>().sharedMesh;
+                combine[i].transform = branches[i].transform.localToWorldMatrix;
+            }
+
+            finalBranch.CombineMeshes(combine);
+
+            foreach (GameObject branch in branches)
+            {
+                Undo.DestroyObjectImmediate(branch);
+            }
+
+            Selection.activeGameObject = CreateGameObject(finalBranch);
         }
-        for(int i = 0; i < leafs.Count; i++)
+        
+        if (InternalEditorUtility.tags.Contains("Leaf"))
         {
-            combineLeaf[i].mesh = leafs[i].GetComponent<MeshFilter>().sharedMesh;
-            combineLeaf[i].transform = leafs[i].transform.localToWorldMatrix;
+            var leafs = GetExistingLeafs();
+            Mesh finalLeaf = new Mesh();
+            CombineInstance[] combineLeaf = new CombineInstance[leafs.Count];
+            for(int i = 0; i < leafs.Count; i++)
+            {
+                combineLeaf[i].mesh = leafs[i].GetComponent<MeshFilter>().sharedMesh;
+                combineLeaf[i].transform = leafs[i].transform.localToWorldMatrix;
+            }
+            finalLeaf.CombineMeshes(combineLeaf);
+            foreach (GameObject leaf in leafs)
+            {
+                Undo.DestroyObjectImmediate(leaf);
+            }
+            CreateLeafMerged( finalLeaf);
         }
-        finalLeaf.CombineMeshes(combineLeaf);
-
-        finalBranch.CombineMeshes(combine);
-
-        foreach (GameObject branch in branches)
-        {
-            Undo.DestroyObjectImmediate(branch);
-        }
-
-        foreach (GameObject leaf in leafs)
-        {
-            Undo.DestroyObjectImmediate(leaf);
-        }
-
-        CreateLeafMerged( finalLeaf);
-
-        Selection.activeGameObject = CreateGameObject(finalBranch);
+        
         Undo.IncrementCurrentGroup();
     }
 }
