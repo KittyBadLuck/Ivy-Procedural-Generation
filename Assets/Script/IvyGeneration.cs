@@ -20,12 +20,12 @@ public class IvyGenerationSettings : ScriptableObject
     public int numberOfSegments = 30;
     public float offsetFromSurface = 0.1f;
     public float directionChangeRange = 20f;
-    [Header("Leavses")]
-    public bool wantLeaf = true;
-    public GameObject leafPrefab;
-    public Material leafMaterial;
-    [Range(0,100)] public float leafProbability = 60f;
-    [Range(0, 360)] public float leafRotation = 100f;
+    //[Header("Leavses")]
+    //public bool wantLeaf = true;
+    //public GameObject leafPrefab;
+    //public Material leafMaterial;
+    //[Range(0,100)] public float leafProbability = 60f;
+    //[Range(0, 360)] public float leafRotation = 100f;
 
 
 }
@@ -159,16 +159,16 @@ public class IvyGeneration : EditorWindow
                 renderer.material = settings.vineMaterial;
             }
 
-            if (settings.leafMaterial != null && InternalEditorUtility.tags.Contains("Leaf"))
-            {
-                var leafs = GetExistingLeafs();
-                for (int i = 0; i < leafs.Count; i++)
-                {
-                    var renderer = leafs[i].GetComponent<MeshRenderer>();
-                    Undo.RecordObject(renderer, "apply material");
-                    renderer.material = settings.leafMaterial;
-                }
-            }
+            //if (settings.leafMaterial != null && InternalEditorUtility.tags.Contains("Leaf"))
+            //{
+            //    var leafs = GetExistingLeafs();
+            //    for (int i = 0; i < leafs.Count; i++)
+            //    {
+            //        var renderer = leafs[i].GetComponent<MeshRenderer>();
+            //        Undo.RecordObject(renderer, "apply material");
+            //        renderer.material = settings.leafMaterial;
+            //    }
+            //}
             
             Undo.IncrementCurrentGroup();
         }
@@ -191,21 +191,21 @@ public class IvyGeneration : EditorWindow
     void OnScene(SceneView scene)
     {
         Event e = Event.current;
-        if (origin != null && originChanged != null)
-        {
-            Handles.color= Color.red;
-            Handles.DrawLine(origin ,origin+directionOriginal);
+        //if (origin != null && originChanged != null)
+        //{
+        //    Handles.color= Color.red;
+        //    Handles.DrawLine(origin ,origin+directionOriginal);
         
-            Handles.color = Color.blue;
-            Handles.DrawLine(originChanged, originChanged + directionChanged);
+        //    Handles.color = Color.blue;
+        //    Handles.DrawLine(originChanged, originChanged + directionChanged);
 
-            Handles.color =Color.green;
-            Handles.DrawLine(originChanged, originChanged+Normal);
+        //    Handles.color =Color.green;
+        //    Handles.DrawLine(originChanged, originChanged+Normal);
             
-            Handles.color = Color.cyan;
-            Handles.DrawLine(originChanged, originChanged+tangent);
+        //    Handles.color = Color.cyan;
+        //    Handles.DrawLine(originChanged, originChanged+tangent);
             
-        }
+        //}
 
         //feedback: added mouse icon to show where the vine will be spawned
         Vector3 mouse = e.mousePosition;
@@ -410,46 +410,46 @@ public class IvyGeneration : EditorWindow
         return branch;
     }
 
-    void CreateLeafs(Vector3 point = default(Vector3), Vector3 up = default(Vector3))
-    {
-        float leafAppear = Random.Range(0, 100);
-        if (leafAppear <= settings.leafProbability)
-        {
-            //  Vector3 forward = new Vector3(Random.Range(0, settings.leafRotation), Random.Range(0,settings.leafRotation), Random.Range(0, settings.leafRotation));
-          GameObject  leaf = Instantiate(settings.leafPrefab, point, Quaternion.AngleAxis(Random.Range(-settings.leafRotation, settings.leafRotation), up), ivyParent.transform);
-          if (!InternalEditorUtility.tags.Contains("Leaf"))
-          {
-              InternalEditorUtility.AddTag("Leaf");
-              AssetDatabase.SaveAssets();
-              AssetDatabase.Refresh();
-          }
-          leaf.tag = "Leaf";
-          if (settings.leafMaterial != null)
-          {
-              leaf.GetComponent<MeshRenderer>().material = settings.leafMaterial;
-          }
-        }
-    }
+    //void CreateLeafs(Vector3 point = default(Vector3), Vector3 up = default(Vector3))
+    //{
+    //    float leafAppear = Random.Range(0, 100);
+    //    if (leafAppear <= settings.leafProbability)
+    //    {
+    //        //  Vector3 forward = new Vector3(Random.Range(0, settings.leafRotation), Random.Range(0,settings.leafRotation), Random.Range(0, settings.leafRotation));
+    //      GameObject  leaf = Instantiate(settings.leafPrefab, point, Quaternion.AngleAxis(Random.Range(-settings.leafRotation, settings.leafRotation), up), ivyParent.transform);
+    //      if (!InternalEditorUtility.tags.Contains("Leaf"))
+    //      {
+    //          InternalEditorUtility.AddTag("Leaf");
+    //          AssetDatabase.SaveAssets();
+    //          AssetDatabase.Refresh();
+    //      }
+    //      leaf.tag = "Leaf";
+    //      if (settings.leafMaterial != null)
+    //      {
+    //          leaf.GetComponent<MeshRenderer>().material = settings.leafMaterial;
+    //      }
+    //    }
+    //}
 
-    void CreateLeafMerged(Mesh mesh)
-    {
-       GameObject leaf = new GameObject("Leafs");
-        Undo.SetTransformParent(leaf.transform, ivyParent.transform, true, "parent branch to ivy root");
-        Undo.AddComponent<MeshFilter>(leaf);
-        Undo.AddComponent<MeshRenderer>(leaf);
-        leaf.GetComponent<MeshFilter>().sharedMesh = mesh;
-        if (!InternalEditorUtility.tags.Contains("Leaf"))
-        {
-            InternalEditorUtility.AddTag("Leaf");
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-        }
-        leaf.tag = "Leaf";
-        if (settings.leafMaterial != null)
-        {
-            leaf.GetComponent<MeshRenderer>().material = settings.leafMaterial;
-        }
-    }
+    //void CreateLeafMerged(Mesh mesh)
+    //{
+    //   GameObject leaf = new GameObject("Leafs");
+    //    Undo.SetTransformParent(leaf.transform, ivyParent.transform, true, "parent branch to ivy root");
+    //    Undo.AddComponent<MeshFilter>(leaf);
+    //    Undo.AddComponent<MeshRenderer>(leaf);
+    //    leaf.GetComponent<MeshFilter>().sharedMesh = mesh;
+    //    if (!InternalEditorUtility.tags.Contains("Leaf"))
+    //    {
+    //        InternalEditorUtility.AddTag("Leaf");
+    //        AssetDatabase.SaveAssets();
+    //        AssetDatabase.Refresh();
+    //    }
+    //    leaf.tag = "Leaf";
+    //    if (settings.leafMaterial != null)
+    //    {
+    //        leaf.GetComponent<MeshRenderer>().material = settings.leafMaterial;
+    //    }
+    //}
     
     
 
@@ -501,10 +501,10 @@ public class IvyGeneration : EditorWindow
                     pos = pos - (settings.width / 2) * widthAxis;
                     vertices[i*2+v] = pos;
                 }
-                if (settings.wantLeaf && settings.leafPrefab != null)
-                {
-                    CreateLeafs(vertices[i*2+v], up);
-                }
+                //if (settings.wantLeaf && settings.leafPrefab != null)
+                //{
+                //    CreateLeafs(vertices[i*2+v], up);
+                //}
                 
             }
             
@@ -586,7 +586,7 @@ public class IvyGeneration : EditorWindow
             {
                 Undo.DestroyObjectImmediate(leaf);
             }
-            CreateLeafMerged( finalLeaf);
+            //CreateLeafMerged( finalLeaf);
         }
         
         Undo.IncrementCurrentGroup();
